@@ -6,7 +6,7 @@ from aiofile import AIOFile
 from async_lru import alru_cache
 
 PORT = 8000
-CHUNK_LIMIT = 255
+CHUNK_LIMIT = 50
 RESPONSE = 'HTTP/1.1 {status} {status_msg}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Encoding: UTF-8\r\nAccept-Ranges: bytes\r\nConnection: closed\r\n\r\n{html}'
 STATIC_DIR = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -27,6 +27,7 @@ def parse_request(request_str):
     part_one, part_two = request_str.split('\r\n\r\n')
     http_lines = part_one.split('\r\n')
     method, url, _ = http_lines[0].split(' ')
+    # TODO: catch this with exception
     if method != 'GET':
         status, status_msg = 405, 'Not allowed'
     else:
@@ -84,7 +85,7 @@ async def run_server(selected_server):
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(('localhost', PORT))
-server.listen(8)
+server.listen(1)
 server.setblocking(False)
 
 loop = asyncio.get_event_loop()
